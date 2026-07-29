@@ -123,7 +123,7 @@ Les évaluations peuvent utiliser :
 | Jalon | Objectif                              | Statut      |
 |-------|---------------------------------------|-------------|
 | 0     | Confirmation des exigences            | ✅ Terminé  |
-| 1     | Fondations du projet                  | En attente  |
+| 1     | Fondations du projet                  | ✅ Terminé  |
 | 2     | Authentification et rôles             | En attente  |
 | 3     | Élèves et tuteurs                     | En attente  |
 | 4     | Numéros de dossier permanents         | En attente  |
@@ -142,7 +142,7 @@ Les évaluations peuvent utiliser :
 
 ## Installation (développement)
 
-> Les instructions détaillées seront ajoutées au Jalon 1.
+Prérequis : Python 3.12+, PostgreSQL 16+ installés localement.
 
 ```bash
 # Cloner le dépôt
@@ -150,7 +150,7 @@ git clone <url-du-depot>
 cd kindergarten-management-system
 
 # Créer l'environnement virtuel
-python -m venv venv
+python3.12 -m venv venv
 source venv/bin/activate
 
 # Installer les dépendances
@@ -158,7 +158,11 @@ pip install -r requirements.txt
 
 # Configurer les variables d'environnement
 cp .env.example .env
-# Modifier .env avec vos paramètres locaux
+# Modifier .env avec vos paramètres locaux (base de données, clé secrète)
+
+# Créer la base de données PostgreSQL (si elle n'existe pas déjà)
+createdb kindergarten_dev
+createuser -s kindergarten_admin
 
 # Appliquer les migrations
 python manage.py migrate
@@ -171,7 +175,7 @@ python manage.py runserver
 
 ## Variables d'environnement
 
-Copier `.env.example` en `.env` et renseigner les valeurs. Ne jamais committer le fichier `.env`.
+Copier `.env.example` en `.env` et renseigner les valeurs (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`). Ne jamais committer le fichier `.env`.
 
 ---
 
