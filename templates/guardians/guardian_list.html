@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Tuteurs - École maternelle{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">Tuteurs</h1>
+    <a href="{% url 'guardians:create' %}" class="btn btn-primary btn-sm">Ajouter un tuteur</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm"
+               placeholder="Rechercher un nom">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">Filtrer</button>
+    </div>
+</form>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Téléphone</th>
+            <th>Courriel</th>
+            <th>Statut</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for guardian in guardians %}
+        <tr class="{% if not guardian.is_active %}text-muted{% endif %}">
+            <td><a href="{% url 'guardians:detail' guardian.pk %}">{{ guardian.last_name|upper }}</a></td>
+            <td>{{ guardian.first_name }}</td>
+            <td>{{ guardian.phone }}</td>
+            <td>{{ guardian.email }}</td>
+            <td>
+                <span class="badge {% if guardian.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                    {% if guardian.is_active %}Actif{% else %}Inactif{% endif %}
+                </span>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-muted">Aucun tuteur trouvé.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+<nav>
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}">Précédent</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}">Suivant</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

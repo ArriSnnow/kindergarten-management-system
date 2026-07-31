@@ -148,3 +148,12 @@ AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'accounts:dashboard'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Messages
+# https://docs.djangoproject.com/en/5.2/ref/contrib/messages/#message-tags
+
+from django.contrib.messages import constants as message_constants  # noqa: E402
+
+MESSAGE_TAGS = {
+    message_constants.ERROR: 'danger',
+}

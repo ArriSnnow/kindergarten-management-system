@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student }} - École maternelle{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">
+        {{ student }}
+        <span class="badge {% if student.is_archived %}bg-secondary{% else %}bg-success{% endif %}">
+            {{ student.get_status_display }}
+        </span>
+    </h1>
+    <div>
+        <a href="{% url 'students:update' student.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+        {% if student.is_archived %}
+        <form method="post" action="{% url 'students:reactivate' student.pk %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-success btn-sm">Réactiver</button>
+        </form>
+        {% else %}
+        <a href="{% url 'students:archive' student.pk %}" class="btn btn-outline-danger btn-sm">Archiver</a>
+        {% endif %}
+    </div>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Date de naissance</dt>
+    <dd class="col-sm-9">{{ student.date_of_birth|date:"d/m/Y" }}</dd>
+    <dt class="col-sm-3">Sexe</dt>
+    <dd class="col-sm-9">{{ student.get_gender_display }}</dd>
+    <dt class="col-sm-3">Date d'inscription</dt>
+    <dd class="col-sm-9">{{ student.enrollment_date|date:"d/m/Y" }}</dd>
+    <dt class="col-sm-3">Numéro de dossier</dt>
+    <dd class="col-sm-9 text-muted">Attribué au Jalon 4</dd>
+    {% if student.is_archived %}
+    <dt class="col-sm-3">Motif d'archivage</dt>
+    <dd class="col-sm-9">{{ student.archive_reason }} <span class="text-muted">({{ student.archived_at|date:"d/m/Y" }})</span></dd>
+    {% endif %}
+</dl>
+
+<hr>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h2 class="h5 mb-0">Tuteurs</h2>
+    <a href="{% url 'students:guardian-add' student.pk %}" class="btn btn-outline-primary btn-sm">Ajouter un tuteur</a>
+</div>
+<table class="table table-sm align-middle">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Lien</th>
+            <th>Contact principal</th>
+            <th>Téléphone</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for link in guardian_links %}
+        <tr>
+            <td><a href="{% url 'guardians:detail' link.guardian.pk %}">{{ link.guardian }}</a></td>
+            <td>{{ link.get_relationship_type_display }}</td>
+            <td>{% if link.is_primary_contact %}Oui{% else %}Non{% endif %}</td>
+            <td>{{ link.guardian.phone }}</td>
+            <td>
+                <form method="post" action="{% url 'students:guardian-remove' student.pk link.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Retirer</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-muted">Aucun tuteur lié.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h2 class="h5 mb-0">Personnes autorisées à récupérer l'élève</h2>
+    <a href="{% url 'students:pickup-add' student.pk %}" class="btn btn-outline-primary btn-sm">Ajouter une personne</a>
+</div>
+<table class="table table-sm align-middle">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Lien</th>
+            <th>Téléphone</th>
+            <th>Statut</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for person in authorized_pickups %}
+        <tr class="{% if not person.is_active %}text-muted{% endif %}">
+            <td>{{ person }}</td>
+            <td>{{ person.relationship }}</td>
+            <td>{{ person.phone }}</td>
+            <td>{% if person.is_active %}Actif{% else %}Inactif{% endif %}</td>
+            <td>
+                <a href="{% url 'students:pickup-update' student.pk person.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+                {% if person.is_active %}
+                <form method="post" action="{% url 'students:pickup-deactivate' student.pk person.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Désactiver</button>
+                </form>
+                {% else %}
+                <form method="post" action="{% url 'students:pickup-reactivate' student.pk person.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-success btn-sm">Réactiver</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-muted">Aucune personne autorisée enregistrée.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

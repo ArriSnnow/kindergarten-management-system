@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Archiver {{ student }} - École maternelle{% endblock %}
+
+{% block content %}
+<h1 class="h4 mb-3">Archiver {{ student }}</h1>
+<p class="text-muted">L'élève ne sera pas supprimé — son dossier sera conservé et pourra être réactivé.</p>
+
+<form method="post" class="col-md-6">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label" for="{{ form.archive_reason.id_for_label }}">{{ form.archive_reason.label }}</label>
+        {{ form.archive_reason }}
+        {% if form.archive_reason.errors %}
+        <div class="text-danger small">{{ form.archive_reason.errors }}</div>
+        {% endif %}
+    </div>
+    <button type="submit" class="btn btn-danger">Archiver</button>
+    <a href="{% url 'students:detail' student.pk %}" class="btn btn-outline-secondary">Annuler</a>
+</form>
+{% endblock %}
