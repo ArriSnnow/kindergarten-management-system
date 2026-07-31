@@ -12,5 +12,7 @@ from config.views import HomeView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('comptes/', include('accounts.urls')),
+    path('eleves/', include('students.urls')),
+    path('tuteurs/', include('guardians.urls')),
     path('', HomeView.as_view(), name='home'),
 ]

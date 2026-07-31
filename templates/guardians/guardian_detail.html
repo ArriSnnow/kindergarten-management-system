@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ guardian }} - École maternelle{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">
+        {{ guardian }}
+        <span class="badge {% if guardian.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+            {% if guardian.is_active %}Actif{% else %}Inactif{% endif %}
+        </span>
+    </h1>
+    <div>
+        <a href="{% url 'guardians:update' guardian.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+        {% if guardian.is_active %}
+        <form method="post" action="{% url 'guardians:deactivate' guardian.pk %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm">Désactiver</button>
+        </form>
+        {% else %}
+        <form method="post" action="{% url 'guardians:reactivate' guardian.pk %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-success btn-sm">Réactiver</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Téléphone</dt>
+    <dd class="col-sm-9">{{ guardian.phone }}</dd>
+    <dt class="col-sm-3">Courriel</dt>
+    <dd class="col-sm-9">{{ guardian.email|default:"—" }}</dd>
+    <dt class="col-sm-3">Adresse</dt>
+    <dd class="col-sm-9">{{ guardian.address|default:"—" }}</dd>
+    <dt class="col-sm-3">Compte parent lié</dt>
+    <dd class="col-sm-9">{{ guardian.user.username|default:"Aucun" }}</dd>
+</dl>
+
+<hr>
+
+<h2 class="h5 mb-2">Élèves liés</h2>
+<table class="table table-sm align-middle">
+    <thead>
+        <tr>
+            <th>Élève</th>
+            <th>Lien</th>
+            <th>Contact principal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for link in student_links %}
+        <tr>
+            <td><a href="{% url 'students:detail' link.student.pk %}">{{ link.student }}</a></td>
+            <td>{{ link.get_relationship_type_display }}</td>
+            <td>{% if link.is_primary_contact %}Oui{% else %}Non{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="text-muted">Aucun élève lié.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

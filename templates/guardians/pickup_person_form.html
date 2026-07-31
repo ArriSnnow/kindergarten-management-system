@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Personne autorisée - École maternelle{% endblock %}
+
+{% block content %}
+<h1 class="h4 mb-3">
+    {% if object %}Modifier une personne autorisée{% else %}Ajouter une personne autorisée{% endif %}
+    pour {{ student }}
+</h1>
+
+<form method="post" class="col-md-6">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="mb-3">
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+        <div class="text-danger small">{{ field.errors }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a href="{% url 'students:detail' student.pk %}" class="btn btn-outline-secondary">Annuler</a>
+</form>
+{% endblock %}
