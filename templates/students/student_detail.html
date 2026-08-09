@@ -54,7 +54,10 @@
 
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h2 class="h5 mb-0">Inscriptions</h2>
-    <a href="{% url 'students:enrollment-add' student.pk %}" class="btn btn-outline-primary btn-sm">Inscrire</a>
+    <div>
+        <a href="{% url 'attendance:student-history' student.pk %}" class="btn btn-outline-secondary btn-sm">Présences</a>
+        <a href="{% url 'students:enrollment-add' student.pk %}" class="btn btn-outline-primary btn-sm">Inscrire</a>
+    </div>
 </div>
 <table class="table table-sm align-middle">
     <thead>

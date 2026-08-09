@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Présences — {{ classe }} - École maternelle{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">Présences — {{ classe }}</h1>
+    <a href="{% url 'academics:class-detail' classe.pk %}" class="btn btn-outline-secondary btn-sm">Retour à la classe</a>
+</div>
+
+<form method="get" class="row row-cols-auto g-2 align-items-end mb-3">
+    <div class="col">
+        <label class="form-label" for="id_date">{{ date_form.date.label }}</label>
+        {{ date_form.date }}
+    </div>
+    <div class="col">
+        <button type="submit" class="btn btn-outline-primary">Changer de date</button>
+    </div>
+</form>
+
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="date" value="{{ date|date:'Y-m-d' }}">
+    <table class="table table-sm align-middle">
+        <thead>
+            <tr>
+                <th>Élève</th>
+                <th>Statut</th>
+                <th>Remarque</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enrollment, attendance in rows %}
+            <tr>
+                <td>{{ enrollment.student }}</td>
+                <td>
+                    <select name="status_{{ enrollment.pk }}" class="form-select form-select-sm">
+                        {% for value, label in statuses %}
+                        <option value="{{ value }}" {% if attendance.status == value or not attendance and value == 'PRESENT' %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="note_{{ enrollment.pk }}" class="form-control form-control-sm"
+                           value="{{ attendance.note|default:'' }}">
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-muted">Aucun élève inscrit dans cette classe.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if rows %}
+    <button type="submit" class="btn btn-primary">Enregistrer les présences</button>
+    {% endif %}
+</form>
+{% endblock %}
