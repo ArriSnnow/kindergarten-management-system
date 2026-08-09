@@ -46,6 +46,7 @@ class StudentDetailView(AdminRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['guardian_links'] = self.object.guardian_links.select_related('guardian')
         context['authorized_pickups'] = self.object.authorized_pickups.all()
+        context['enrollments'] = self.object.enrollments.select_related('school_year', 'classe')
         return context
 
 

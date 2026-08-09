@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Retirer une inscription - École maternelle{% endblock %}
+
+{% block content %}
+<h1 class="h4 mb-3">Retirer l'inscription de {{ enrollment.student }} ({{ enrollment.school_year.label }})</h1>
+
+<form method="post" class="col-md-6">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="mb-3">
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+        <div class="text-danger small">{{ field.errors }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-danger">Confirmer le retrait</button>
+    <a href="{% url 'students:detail' enrollment.student.pk %}" class="btn btn-outline-secondary">Annuler</a>
+</form>
+{% endblock %}
