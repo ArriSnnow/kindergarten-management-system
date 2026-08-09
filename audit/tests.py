@@ -14,6 +14,7 @@ class LogActionTests(TestCase):
         self.student = Student.objects.create(
             last_name='Dupont', first_name='Léa', date_of_birth='2021-03-10',
             gender=Student.Gender.GIRL, enrollment_date='2024-09-01',
+            registration_grade=Student.RegistrationGrade.PS,
         )
 
     def test_log_action_records_entry(self):

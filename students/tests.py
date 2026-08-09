@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from audit.models import AuditLog
-from students.models import Student
+from students.models import FileNumberSequence, Student
 
 User = get_user_model()
 
@@ -15,6 +15,7 @@ def make_student(**kwargs):
         'date_of_birth': '2021-03-10',
         'gender': Student.Gender.GIRL,
         'enrollment_date': '2024-09-01',
+        'registration_grade': Student.RegistrationGrade.PS,
     }
     defaults.update(kwargs)
     return Student.objects.create(**defaults)
@@ -35,6 +36,71 @@ class StudentModelTests(TestCase):
         make_student(last_name='Abel', first_name='B')
         names = list(Student.objects.values_list('last_name', flat=True))
         self.assertEqual(names, ['Abel', 'Zed'])
+
+
+class FileNumberGenerationTests(TestCase):
+    def test_file_number_format(self):
+        student = make_student(enrollment_date='2024-09-01', registration_grade=Student.RegistrationGrade.PS)
+        self.assertEqual(student.file_number, '2024-PS-001')
+
+    def test_file_numbers_sequential_within_same_year_and_grade(self):
+        first = make_student(enrollment_date='2024-09-01', registration_grade=Student.RegistrationGrade.MS)
+        second = make_student(
+            last_name='Bernard', first_name='Tom',
+            enrollment_date='2024-09-01', registration_grade=Student.RegistrationGrade.MS,
+        )
+        self.assertEqual(first.file_number, '2024-MS-001')
+        self.assertEqual(second.file_number, '2024-MS-002')
+
+    def test_file_numbers_independent_per_grade(self):
+        ps_student = make_student(enrollment_date='2024-09-01', registration_grade=Student.RegistrationGrade.PS)
+        gs_student = make_student(
+            last_name='Bernard', first_name='Tom',
+            enrollment_date='2024-09-01', registration_grade=Student.RegistrationGrade.GS,
+        )
+        self.assertEqual(ps_student.file_number, '2024-PS-001')
+        self.assertEqual(gs_student.file_number, '2024-GS-001')
+
+    def test_file_numbers_independent_per_year(self):
+        first = make_student(enrollment_date='2024-09-01', registration_grade=Student.RegistrationGrade.PS)
+        second = make_student(
+            last_name='Bernard', first_name='Tom',
+            enrollment_date='2025-09-01', registration_grade=Student.RegistrationGrade.PS,
+        )
+        self.assertEqual(first.file_number, '2024-PS-001')
+        self.assertEqual(second.file_number, '2025-PS-001')
+
+    def test_file_number_immutable_on_update(self):
+        student = make_student(enrollment_date='2024-09-01', registration_grade=Student.RegistrationGrade.PS)
+        original_number = student.file_number
+        student.last_name = 'Nouveaunom'
+        student.save()
+        student.refresh_from_db()
+        self.assertEqual(student.file_number, original_number)
+
+    def test_registration_grade_choice_does_not_affect_other_sequences_after_update(self):
+        student = make_student(enrollment_date='2024-09-01', registration_grade=Student.RegistrationGrade.PS)
+        student.registration_grade = Student.RegistrationGrade.GS
+        student.save()
+        student.refresh_from_db()
+        self.assertEqual(student.file_number, '2024-PS-001')
+
+    def test_sequence_exhaustion_raises(self):
+        FileNumberSequence.objects.create(year=2024, grade=Student.RegistrationGrade.PS, last_number=999)
+        with self.assertRaises(ValueError):
+            make_student(enrollment_date='2024-09-01', registration_grade=Student.RegistrationGrade.PS)
+
+    def test_physical_location_fields_optional(self):
+        student = make_student()
+        self.assertEqual(student.cabinet, '')
+        self.assertEqual(student.drawer, '')
+        self.assertEqual(student.position, '')
+
+    def test_physical_location_fields_can_be_set(self):
+        student = make_student(cabinet='A', drawer='2', position='Gauche')
+        self.assertEqual(student.cabinet, 'A')
+        self.assertEqual(student.drawer, '2')
+        self.assertEqual(student.position, 'Gauche')
 
 
 class StudentAccessControlTests(TestCase):
@@ -76,9 +142,11 @@ class StudentCrudFlowTests(TestCase):
             'date_of_birth': '2020-05-01',
             'gender': Student.Gender.BOY,
             'enrollment_date': '2024-09-01',
+            'registration_grade': Student.RegistrationGrade.PS,
         })
         student = Student.objects.get(last_name='Martin')
         self.assertRedirects(response, reverse('students:detail', args=[student.pk]))
+        self.assertEqual(student.file_number, '2024-PS-001')
         self.assertTrue(
             AuditLog.objects.filter(action=AuditLog.Action.CREATE, model_name='student').exists(),
         )
