@@ -31,6 +31,7 @@
         <tr>
             <th>Nom</th>
             <th>Prénom</th>
+            <th>N° dossier</th>
             <th>Date de naissance</th>
             <th>Statut</th>
         </tr>
@@ -40,6 +41,7 @@
         <tr class="{% if student.is_archived %}text-muted{% endif %}">
             <td><a href="{% url 'students:detail' student.pk %}">{{ student.last_name|upper }}</a></td>
             <td>{{ student.first_name }}</td>
+            <td>{{ student.file_number }}</td>
             <td>{{ student.date_of_birth|date:"d/m/Y" }}</td>
             <td>
                 <span class="badge {% if student.is_archived %}bg-secondary{% else %}bg-success{% endif %}">
@@ -48,7 +50,7 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="4" class="text-muted">Aucun élève trouvé.</td></tr>
+        <tr><td colspan="5" class="text-muted">Aucun élève trouvé.</td></tr>
         {% endfor %}
     </tbody>
 </table>

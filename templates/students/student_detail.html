@@ -30,12 +30,24 @@
     <dd class="col-sm-9">{{ student.get_gender_display }}</dd>
     <dt class="col-sm-3">Date d'inscription</dt>
     <dd class="col-sm-9">{{ student.enrollment_date|date:"d/m/Y" }}</dd>
+    <dt class="col-sm-3">Niveau à l'inscription</dt>
+    <dd class="col-sm-9">{{ student.get_registration_grade_display }}</dd>
     <dt class="col-sm-3">Numéro de dossier</dt>
-    <dd class="col-sm-9 text-muted">Attribué au Jalon 4</dd>
+    <dd class="col-sm-9"><strong>{{ student.file_number }}</strong></dd>
     {% if student.is_archived %}
     <dt class="col-sm-3">Motif d'archivage</dt>
     <dd class="col-sm-9">{{ student.archive_reason }} <span class="text-muted">({{ student.archived_at|date:"d/m/Y" }})</span></dd>
     {% endif %}
+</dl>
+
+<h2 class="h5">Localisation du dossier physique</h2>
+<dl class="row">
+    <dt class="col-sm-3">Armoire</dt>
+    <dd class="col-sm-9">{{ student.cabinet|default:"—" }}</dd>
+    <dt class="col-sm-3">Tiroir</dt>
+    <dd class="col-sm-9">{{ student.drawer|default:"—" }}</dd>
+    <dt class="col-sm-3">Position</dt>
+    <dd class="col-sm-9">{{ student.position|default:"—" }}</dd>
 </dl>
 
 <hr>

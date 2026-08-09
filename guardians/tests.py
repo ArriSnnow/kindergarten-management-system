@@ -17,6 +17,7 @@ def make_student(**kwargs):
         'date_of_birth': '2021-03-10',
         'gender': Student.Gender.GIRL,
         'enrollment_date': '2024-09-01',
+        'registration_grade': Student.RegistrationGrade.PS,
     }
     defaults.update(kwargs)
     return Student.objects.create(**defaults)
