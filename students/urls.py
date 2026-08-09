@@ -1,5 +1,6 @@
 from django.urls import path
 
+from academics.views import EnrollmentCreateView, EnrollmentUpdateView, EnrollmentWithdrawView
 from guardians.views import (
     AuthorizedPickupPersonCreateView,
     AuthorizedPickupPersonDeactivateView,
@@ -39,4 +40,10 @@ urlpatterns = [
          AuthorizedPickupPersonDeactivateView.as_view(), name='pickup-deactivate'),
     path('<int:student_pk>/personnes-autorisees/<int:pk>/reactiver/',
          AuthorizedPickupPersonReactivateView.as_view(), name='pickup-reactivate'),
+
+    path('<int:student_pk>/inscriptions/ajouter/', EnrollmentCreateView.as_view(), name='enrollment-add'),
+    path('<int:student_pk>/inscriptions/<int:pk>/modifier/', EnrollmentUpdateView.as_view(),
+         name='enrollment-update'),
+    path('<int:student_pk>/inscriptions/<int:pk>/retirer/', EnrollmentWithdrawView.as_view(),
+         name='enrollment-withdraw'),
 ]

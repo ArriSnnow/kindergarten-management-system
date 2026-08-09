@@ -72,6 +72,10 @@ class Student(models.Model):
     def is_archived(self):
         return self.status == self.Status.ARCHIVED
 
+    @property
+    def current_enrollment(self):
+        return self.enrollments.filter(school_year__is_current=True).first()
+
     def save(self, *args, **kwargs):
         creating = self._state.adding
         super().save(*args, **kwargs)
