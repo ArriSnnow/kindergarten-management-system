@@ -5,7 +5,10 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h4 mb-0">{{ classe }}</h1>
-    <a href="{% url 'academics:class-update' classe.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+    <div>
+        <a href="{% url 'attendance:take' classe.pk %}" class="btn btn-outline-primary btn-sm">Prendre les présences</a>
+        <a href="{% url 'academics:class-update' classe.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+    </div>
 </div>
 
 <dl class="row">
