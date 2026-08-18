@@ -5,6 +5,9 @@ class Staff(models.Model):
     last_name = models.CharField('nom', max_length=100)
     first_name = models.CharField('prénom', max_length=100)
     phone = models.CharField('téléphone', max_length=30, blank=True)
+    position = models.CharField('poste', max_length=100, blank=True)
+    hire_date = models.DateField('date d\'embauche', null=True, blank=True)
+    is_active = models.BooleanField('actif', default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

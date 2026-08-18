@@ -1,6 +1,6 @@
 from django import forms
 
-from staff.models import Staff
+from payments.models import Fee, Payment
 
 
 class _BootstrapFormMixin:
@@ -13,11 +13,21 @@ class _BootstrapFormMixin:
             field.widget.attrs.setdefault('class', css_class)
 
 
-class StaffForm(_BootstrapFormMixin, forms.ModelForm):
+class FeeForm(_BootstrapFormMixin, forms.ModelForm):
     class Meta:
-        model = Staff
-        fields = ['last_name', 'first_name', 'phone', 'position', 'hire_date']
-        widgets = {'hire_date': forms.DateInput(attrs={'type': 'date'})}
+        model = Fee
+        fields = ['amount_due', 'note']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._apply_bootstrap()
+
+
+class PaymentForm(_BootstrapFormMixin, forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['amount', 'date', 'method', 'note']
+        widgets = {'date': forms.DateInput(attrs={'type': 'date'})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

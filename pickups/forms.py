@@ -1,7 +1,5 @@
 from django import forms
 
-from staff.models import Staff
-
 
 class _BootstrapFormMixin:
     def _apply_bootstrap(self):
@@ -13,11 +11,8 @@ class _BootstrapFormMixin:
             field.widget.attrs.setdefault('class', css_class)
 
 
-class StaffForm(_BootstrapFormMixin, forms.ModelForm):
-    class Meta:
-        model = Staff
-        fields = ['last_name', 'first_name', 'phone', 'position', 'hire_date']
-        widgets = {'hire_date': forms.DateInput(attrs={'type': 'date'})}
+class PickupDateForm(_BootstrapFormMixin, forms.Form):
+    date = forms.DateField(label='Date', widget=forms.DateInput(attrs={'type': 'date'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

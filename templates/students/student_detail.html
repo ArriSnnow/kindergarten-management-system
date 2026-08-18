@@ -56,6 +56,7 @@
     <h2 class="h5 mb-0">Inscriptions</h2>
     <div>
         <a href="{% url 'attendance:student-history' student.pk %}" class="btn btn-outline-secondary btn-sm">Présences</a>
+        <a href="{% url 'pickups:student-history' student.pk %}" class="btn btn-outline-secondary btn-sm">Départs</a>
         <a href="{% url 'assessments:student-history' student.pk %}" class="btn btn-outline-secondary btn-sm">Évaluations</a>
         <a href="{% url 'students:enrollment-add' student.pk %}" class="btn btn-outline-primary btn-sm">Inscrire</a>
     </div>
@@ -78,6 +79,7 @@
             <td>{{ enrollment.classe|default:"—" }}</td>
             <td>{{ enrollment.get_status_display }}</td>
             <td>
+                <a href="{% url 'payments:fee-detail' enrollment.pk %}" class="btn btn-outline-secondary btn-sm">Frais</a>
                 {% if enrollment.is_active %}
                 <a href="{% url 'students:enrollment-update' student.pk enrollment.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a>
                 <a href="{% url 'students:enrollment-withdraw' student.pk enrollment.pk %}" class="btn btn-outline-danger btn-sm">Retirer</a>

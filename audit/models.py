@@ -10,6 +10,7 @@ class AuditLog(models.Model):
         REACTIVATE = 'REACTIVATE', 'Réactivation'
         DEACTIVATE = 'DEACTIVATE', 'Désactivation'
         DELETE = 'DELETE', 'Suppression'
+        VOID = 'VOID', 'Annulation'
 
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
