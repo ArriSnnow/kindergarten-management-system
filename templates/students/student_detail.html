@@ -56,6 +56,7 @@
     <h2 class="h5 mb-0">Inscriptions</h2>
     <div>
         <a href="{% url 'attendance:student-history' student.pk %}" class="btn btn-outline-secondary btn-sm">Présences</a>
+        <a href="{% url 'pickups:student-history' student.pk %}" class="btn btn-outline-secondary btn-sm">Départs</a>
         <a href="{% url 'students:enrollment-add' student.pk %}" class="btn btn-outline-primary btn-sm">Inscrire</a>
     </div>
 </div>
