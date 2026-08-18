@@ -20,5 +20,6 @@ urlpatterns = [
     path('departs/', include('pickups.urls')),
     path('paiements/', include('payments.urls')),
     path('salaires/', include('salaries.urls')),
+    path('evaluations/', include('assessments.urls')),
     path('', HomeView.as_view(), name='home'),
 ]

@@ -8,6 +8,7 @@
     <div>
         <a href="{% url 'attendance:take' classe.pk %}" class="btn btn-outline-primary btn-sm">Prendre les présences</a>
         <a href="{% url 'pickups:take' classe.pk %}" class="btn btn-outline-primary btn-sm">Enregistrer les départs</a>
+        <a href="{% url 'assessments:take' classe.pk %}" class="btn btn-outline-primary btn-sm">Saisir les évaluations</a>
         <a href="{% url 'academics:class-update' classe.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a>
     </div>
 </div>

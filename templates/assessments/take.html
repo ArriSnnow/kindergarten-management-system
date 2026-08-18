@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Évaluations — {{ classe }} - École maternelle{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">Évaluations — {{ classe }}</h1>
+    <a href="{% url 'academics:class-detail' classe.pk %}" class="btn btn-outline-secondary btn-sm">Retour à la classe</a>
+</div>
+
+<form method="get" class="row row-cols-auto g-2 align-items-end mb-3">
+    <div class="col">
+        <label class="form-label" for="{{ filter_form.domain.id_for_label }}">{{ filter_form.domain.label }}</label>
+        {{ filter_form.domain }}
+    </div>
+    <div class="col">
+        <label class="form-label" for="{{ filter_form.period.id_for_label }}">{{ filter_form.period.label }}</label>
+        {{ filter_form.period }}
+    </div>
+    <div class="col">
+        <button type="submit" class="btn btn-outline-primary">Charger</button>
+    </div>
+</form>
+
+{% if domain and period %}
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="domain" value="{{ domain }}">
+    <input type="hidden" name="period" value="{{ period }}">
+    <table class="table table-sm align-middle">
+        <thead>
+            <tr>
+                <th>Élève</th>
+                <th>Appréciation</th>
+                <th>Note</th>
+                <th>Remarque</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enrollment, assessment in rows %}
+            <tr>
+                <td>{{ enrollment.student }}</td>
+                <td>
+                    <select name="scale_{{ enrollment.pk }}" class="form-select form-select-sm">
+                        <option value="" {% if not assessment.scale %}selected{% endif %}>— Non évalué —</option>
+                        {% for value, label in scales %}
+                        <option value="{{ value }}" {% if assessment.scale == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" step="0.01" min="0" name="score_{{ enrollment.pk }}"
+                           class="form-control form-control-sm" value="{{ assessment.score|default:'' }}">
+                </td>
+                <td>
+                    <input type="text" name="note_{{ enrollment.pk }}" class="form-control form-control-sm"
+                           value="{{ assessment.note|default:'' }}">
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-muted">Aucun élève inscrit dans cette classe.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if rows %}
+    <button type="submit" class="btn btn-primary">Enregistrer les évaluations</button>
+    {% endif %}
+</form>
+{% else %}
+<p class="text-muted">Choisissez un domaine et une période pour afficher la liste des élèves.</p>
+{% endif %}
+{% endblock %}
