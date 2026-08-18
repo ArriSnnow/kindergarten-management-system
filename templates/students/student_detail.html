@@ -78,6 +78,7 @@
             <td>{{ enrollment.classe|default:"—" }}</td>
             <td>{{ enrollment.get_status_display }}</td>
             <td>
+                <a href="{% url 'payments:fee-detail' enrollment.pk %}" class="btn btn-outline-secondary btn-sm">Frais</a>
                 {% if enrollment.is_active %}
                 <a href="{% url 'students:enrollment-update' student.pk enrollment.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a>
                 <a href="{% url 'students:enrollment-withdraw' student.pk enrollment.pk %}" class="btn btn-outline-danger btn-sm">Retirer</a>
