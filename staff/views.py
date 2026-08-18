@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views import View
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from accounts.mixins import AdminRequiredMixin
 from audit.models import AuditLog
@@ -29,6 +31,12 @@ class StaffListView(AdminRequiredMixin, ListView):
         return context
 
 
+class StaffDetailView(AdminRequiredMixin, DetailView):
+    model = Staff
+    template_name = 'staff/staff_detail.html'
+    context_object_name = 'staff_member'
+
+
 class StaffCreateView(AdminRequiredMixin, CreateView):
     model = Staff
     form_class = StaffForm
@@ -41,7 +49,7 @@ class StaffCreateView(AdminRequiredMixin, CreateView):
         return response
 
     def get_success_url(self):
-        return reverse('staff:list')
+        return reverse('staff:detail', args=[self.object.pk])
 
 
 class StaffUpdateView(AdminRequiredMixin, UpdateView):
@@ -56,4 +64,24 @@ class StaffUpdateView(AdminRequiredMixin, UpdateView):
         return response
 
     def get_success_url(self):
-        return reverse('staff:list')
+        return reverse('staff:detail', args=[self.object.pk])
+
+
+class StaffDeactivateView(AdminRequiredMixin, View):
+    def post(self, request, pk):
+        staff = get_object_or_404(Staff, pk=pk)
+        staff.is_active = False
+        staff.save()
+        log_action(request.user, AuditLog.Action.DEACTIVATE, staff)
+        messages.success(request, 'Membre du personnel désactivé.')
+        return redirect('staff:detail', pk=staff.pk)
+
+
+class StaffReactivateView(AdminRequiredMixin, View):
+    def post(self, request, pk):
+        staff = get_object_or_404(Staff, pk=pk)
+        staff.is_active = True
+        staff.save()
+        log_action(request.user, AuditLog.Action.REACTIVATE, staff)
+        messages.success(request, 'Membre du personnel réactivé.')
+        return redirect('staff:detail', pk=staff.pk)

@@ -23,20 +23,24 @@
         <tr>
             <th>Nom</th>
             <th>Prénom</th>
+            <th>Poste</th>
             <th>Téléphone</th>
+            <th>Statut</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         {% for member in staff_members %}
-        <tr>
-            <td>{{ member.last_name|upper }}</td>
+        <tr class="{% if not member.is_active %}text-muted{% endif %}">
+            <td><a href="{% url 'staff:detail' member.pk %}">{{ member.last_name|upper }}</a></td>
             <td>{{ member.first_name }}</td>
+            <td>{{ member.position|default:"—" }}</td>
             <td>{{ member.phone }}</td>
+            <td>{% if member.is_active %}Actif{% else %}Inactif{% endif %}</td>
             <td><a href="{% url 'staff:update' member.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a></td>
         </tr>
         {% empty %}
-        <tr><td colspan="4" class="text-muted">Aucun membre du personnel enregistré.</td></tr>
+        <tr><td colspan="6" class="text-muted">Aucun membre du personnel enregistré.</td></tr>
         {% endfor %}
     </tbody>
 </table>
