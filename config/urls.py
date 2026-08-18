@@ -17,5 +17,6 @@ urlpatterns = [
     path('personnel/', include('staff.urls')),
     path('academique/', include('academics.urls')),
     path('presences/', include('attendance.urls')),
+    path('paiements/', include('payments.urls')),
     path('', HomeView.as_view(), name='home'),
 ]
