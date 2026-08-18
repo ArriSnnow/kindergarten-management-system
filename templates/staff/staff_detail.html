@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ staff_member }} - École maternelle{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">
+        {{ staff_member }}
+        <span class="badge {% if staff_member.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+            {% if staff_member.is_active %}Actif{% else %}Inactif{% endif %}
+        </span>
+    </h1>
+    <div>
+        <a href="{% url 'staff:update' staff_member.pk %}" class="btn btn-outline-secondary btn-sm">Modifier</a>
+        {% if staff_member.is_active %}
+        <form method="post" action="{% url 'staff:deactivate' staff_member.pk %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm">Désactiver</button>
+        </form>
+        {% else %}
+        <form method="post" action="{% url 'staff:reactivate' staff_member.pk %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-success btn-sm">Réactiver</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Poste</dt>
+    <dd class="col-sm-9">{{ staff_member.position|default:"—" }}</dd>
+    <dt class="col-sm-3">Téléphone</dt>
+    <dd class="col-sm-9">{{ staff_member.phone|default:"—" }}</dd>
+    <dt class="col-sm-3">Date d'embauche</dt>
+    <dd class="col-sm-9">{{ staff_member.hire_date|date:"d/m/Y"|default:"—" }}</dd>
+</dl>
+
+<a href="{% url 'salaries:staff-history' staff_member.pk %}" class="btn btn-outline-primary btn-sm">Salaires</a>
+{% endblock %}

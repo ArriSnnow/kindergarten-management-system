@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Salaires — {{ staff_member }} - École maternelle{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">Salaires — {{ staff_member }}</h1>
+    <a href="{% url 'staff:detail' staff_member.pk %}" class="btn btn-outline-secondary btn-sm">Retour au personnel</a>
+</div>
+
+<a href="{% url 'salaries:payment-add' staff_member.pk %}" class="btn btn-outline-primary btn-sm mb-3">Enregistrer un paiement</a>
+
+<table class="table table-sm align-middle">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Période</th>
+            <th>Montant</th>
+            <th>Moyen</th>
+            <th>Remarque</th>
+            <th>Statut</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in payments %}
+        <tr class="{% if payment.is_voided %}text-muted{% endif %}">
+            <td>{{ payment.date|date:"d/m/Y" }}</td>
+            <td>{{ payment.period }}</td>
+            <td>{{ payment.amount }}</td>
+            <td>{{ payment.get_method_display }}</td>
+            <td>{{ payment.note|default:"—" }}</td>
+            <td>
+                {% if payment.is_voided %}
+                <span class="badge bg-secondary">Annulé</span>
+                <div class="small text-muted">{{ payment.void_reason }}</div>
+                {% else %}
+                <span class="badge bg-success">Valide</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if not payment.is_voided %}
+                <form method="post" action="{% url 'salaries:payment-void' staff_member.pk payment.pk %}" class="d-flex gap-1">
+                    {% csrf_token %}
+                    <input type="text" name="void_reason" class="form-control form-control-sm" placeholder="Motif" required>
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Annuler</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-muted">Aucun paiement de salaire enregistré.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
